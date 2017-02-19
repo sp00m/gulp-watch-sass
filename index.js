@@ -111,9 +111,15 @@ const ImportTree = (() => {
 
 const EventHandler = (() => {
 
-  const toVinyls = (files) => files.map((file) => vinylFile.readSync(file))
+  const toVinyl = (file) => vinylFile.readSync(file)
 
   const toFile = (vinyl) => vinyl.history[0]
+
+  const addToStream = (files, stream) => {
+    files.forEach((file) => {
+      stream.push(toVinyl(file))
+    })
+  }
 
   return class {
 
@@ -125,7 +131,7 @@ const EventHandler = (() => {
       stream.push(vinyl)
       const file = toFile(vinyl)
       this.tree.readFile(file)
-      stream.push(...toVinyls(this.tree.findImportingFiles(file)))
+      addToStream(this.tree.findImportingFiles(file), stream)
       return stream
     }
 
@@ -134,7 +140,7 @@ const EventHandler = (() => {
       const file = toFile(vinyl)
       this.tree.removeImportingFile(file)
       this.tree.readFile(file)
-      stream.push(...toVinyls(this.tree.findImportingFiles(file)))
+      addToStream(this.tree.findImportingFiles(file), stream)
       return stream
     }
 
@@ -143,7 +149,7 @@ const EventHandler = (() => {
       const importingFiles = this.tree.findImportingFiles(file)
       this.tree.removeImportingFile(file)
       this.tree.removeImportedFile(file)
-      stream.push(...toVinyls(importingFiles))
+      addToStream(importingFiles, stream)
       return stream
     }
 
