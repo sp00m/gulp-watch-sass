@@ -23,7 +23,8 @@
     "globby": "^6.1.0",
     "gulp-fn": "0.0.0",
     "gulp-watch": "^4.3.11",
-    "vinyl-file": "^3.0.0"
+    "vinyl-file": "^3.0.0",
+    "snyk": "^1.25.0"
   },
   "devDependencies": {
     "coveralls": "^2.11.16",
@@ -38,6 +39,9 @@
     "commitmsg": "node ./.hooks/commit-msg",
     "prepush": "eslint . && npm test",
     "test": "istanbul cover -x \"./test/**/*.js\" node_modules/mocha/bin/_mocha -- --recursive ./test/**/*.js",
-    "coverage": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
-  }
+    "coverage": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
+  },
+  "snyk": true
 }
