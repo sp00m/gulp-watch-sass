@@ -35,9 +35,9 @@ gulp.task("sass:watch", () => watchSass([
     .pipe(gulp.dest("../public")))
 ```
 
-### Why
+### Why?
 
-##### `gulp.watch` recompiles all the SASS files
+1. **`gulp.watch` recompiles all the SASS files**
 
 ```js
 gulp.task("sass", () => gulp.src([
@@ -54,7 +54,7 @@ gulp.task("sass:watch", () => {
 
 This works well, but each time a SASS file is updated, all the project's SASS files are recompiled, which can be quite long when working on big projects.
 
-##### [`gulp-watch`](https://www.npmjs.com/package/gulp-watch) doesn't take [`@import`](http://sass-lang.com/guide#topic-5)ing files into account
+2. **[`gulp-watch`](https://www.npmjs.com/package/gulp-watch) doesn't take [`@import`](http://sass-lang.com/guide#topic-5)ing files into account**
 
 ```js
 gulp.task("sass:watch", () => watch([

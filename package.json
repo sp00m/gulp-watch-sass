@@ -1,6 +1,6 @@
 {
   "name": "gulp-watch-sass",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Watches SASS files, adding @import-ing files to the stream",
   "keywords": [
     "gulpplugin",
@@ -23,8 +23,7 @@
     "globby": "^6.1.0",
     "gulp-fn": "0.0.0",
     "gulp-watch": "^4.3.11",
-    "vinyl-file": "^3.0.0",
-    "snyk": "^1.25.0"
+    "vinyl-file": "^3.0.0"
   },
   "devDependencies": {
     "coveralls": "^2.11.16",
@@ -33,15 +32,16 @@
     "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
     "should": "^11.2.0",
-    "sinon": "^1.17.7"
+    "sinon": "^1.17.7",
+    "snyk": "^1.25.0"
   },
   "scripts": {
     "commitmsg": "node ./.hooks/commit-msg",
     "prepush": "eslint . && npm test",
     "test": "istanbul cover -x \"./test/**/*.js\" node_modules/mocha/bin/_mocha -- --recursive ./test/**/*.js",
     "coverage": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
-    "snyk-protect": "snyk protect",
-    "prepublish": "npm run snyk-protect"
+    "snyk": "snyk protect",
+    "prepublish": "npm run snyk"
   },
   "snyk": true
 }
