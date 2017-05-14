@@ -111,13 +111,9 @@ const ImportTree = (() => {
 
 const EventHandler = (() => {
 
-  const toVinyl = (file) => vinylFile.readSync(file)
-
-  const toFile = (vinyl) => vinyl.history[0]
-
   const addToStream = (files, stream) => {
     files.forEach((file) => {
-      stream.push(toVinyl(file))
+      stream.push(vinylFile.readSync(file))
     })
   }
 
@@ -127,25 +123,18 @@ const EventHandler = (() => {
       this.tree = tree
     }
 
-    add(vinyl, stream) {
-      stream.push(vinyl)
-      const file = toFile(vinyl)
+    add(file, stream) {
       this.tree.readFile(file)
       addToStream(this.tree.findImportingFiles(file), stream)
       return stream
     }
 
-    change(vinyl, stream) {
-      stream.push(vinyl)
-      const file = toFile(vinyl)
+    change(file, stream) {
       this.tree.removeImportingFile(file)
-      this.tree.readFile(file)
-      addToStream(this.tree.findImportingFiles(file), stream)
-      return stream
+      return this.add(file, stream)
     }
 
-    unlink(vinyl, stream) {
-      const file = toFile(vinyl)
+    unlink(file, stream) {
       const importingFiles = this.tree.findImportingFiles(file)
       this.tree.removeImportingFile(file)
       this.tree.removeImportedFile(file)
@@ -167,8 +156,8 @@ const watchSass = (globs, options = {}) => {
   const handler = new EventHandler(tree)
   return watch(globs)
     .pipe(fn(function (vinyl) {
-      handler[vinyl.event](vinyl, this)
-    }, false))
+      handler[vinyl.event](vinyl.history[0], this)
+    }))
 }
 
 module.exports = Object.assign(watchSass, { ImportTree, EventHandler })
