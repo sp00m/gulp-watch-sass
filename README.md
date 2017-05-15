@@ -28,44 +28,44 @@ const sass = require("gulp-sass")
 const watchSass = require("gulp-watch-sass")
 
 gulp.task("sass:watch", () => watchSass([
-  "./public/**/*.{sass,scss}",
+  "./public/**/*.scss",
   "!./public/libs/**/*"
 ])
   .pipe(sass())
-  .pipe(gulp.dest("./public")))
+  .pipe(gulp.dest("./public")));
 ```
 
 ### Why?
 
-**`gulp.watch` recompiles all the SASS files**
+**`gulp.watch` recompiles all the SASS files:**
 
 ```js
 gulp.task("sass", () => gulp.src([
-  "./public/**/*.{sass,scss}",
+  "./public/**/*.scss",
   "!./public/libs/**/*"
 ])
   .pipe(sass())
-  .pipe(gulp.dest("./public")))
+  .pipe(gulp.dest("./public")));
 
 gulp.task("sass:watch", () => {
   gulp.watch([
-    "./public/**/*.{sass,scss}",
+    "./public/**/*.scss",
     "!./public/libs/**/*"
   ], ["sass"])
-})
+});
 ```
 
 This works well, but each time a SASS file is updated, all the project's SASS files are recompiled, which can be quite long when working on big projects.
 
-**[`gulp-watch`](https://www.npmjs.com/package/gulp-watch) doesn't take [`@import`](http://sass-lang.com/guide#topic-5)ing files into account**
+**[`gulp-watch`](https://www.npmjs.com/package/gulp-watch) doesn't take [`@import`](http://sass-lang.com/guide#topic-5)ing files into account:**
 
 ```js
 gulp.task("sass:watch", () => watch([
-  "./public/**/*.{sass,scss}",
+  "./public/**/*.scss",
   "!./public/libs/**/*"
 ])
   .pipe(sass())
-  .pipe(gulp.dest("./public")))
+  .pipe(gulp.dest("./public")));
 ```
 
 This recompiles only modified SASS files, but because [`@import`](http://sass-lang.com/guide#topic-5) statements are not resolved, the stylesheets may not be refreshed as expected.
