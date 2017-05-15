@@ -3,7 +3,7 @@ const sinon = require("sinon")
 const globby = require("globby")
 
 const { ImportTree, EventHandler } = require("../")
-const { cwd, toPath, create, remove, assertStreamContainsOnly } = require("./_utils")
+const { cwd, toPath, exists, create, remove, assertStreamContainsOnly } = require("./_utils")
 
 describe("gulp-watch-sass", () => {
 
@@ -134,6 +134,24 @@ describe("gulp-watch-sass", () => {
 
     const stream = handler.unlink(toPath("b.scss"), [])
     assertStreamContainsOnly(stream, "a.scss")
+
+    warn.called.should.be.false()
+
+  })
+
+  it("should delete CSS file on 'unlink'", () => {
+
+    const warn = sinon.spy()
+
+    create("a.css", "div { margin: 0; }")
+    create("a.scss", "div { margin: 0; }")
+
+    const tree = new ImportTree(cwd, "*.scss", warn).build()
+    const handler = new EventHandler(tree)
+
+    exists("a.css").should.be.true()
+    handler.unlink(toPath("a.scss"))
+    exists("a.css").should.be.false()
 
     warn.called.should.be.false()
 

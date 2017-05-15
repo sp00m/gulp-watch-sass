@@ -5,6 +5,8 @@ const cwd = path.resolve(process.cwd(), "test/")
 
 const toPath = (fileName) => path.resolve(cwd, fileName)
 
+const exists = (fileName) => fs.existsSync(toPath(fileName))
+
 const create = (fileName, content) => fs.writeFileSync(toPath(fileName), content)
 
 const remove = (fileName) => fs.unlinkSync(toPath(fileName))
@@ -17,4 +19,4 @@ const assertStreamContainsOnly = (stream, ...fileNames) => {
   files.should.have.length(fileNames.length)
 }
 
-module.exports = { cwd, toPath, create, remove, assertStreamContainsOnly }
+module.exports = { cwd, toPath, exists, create, remove, assertStreamContainsOnly }

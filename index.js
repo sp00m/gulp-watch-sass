@@ -135,6 +135,10 @@ const EventHandler = (() => {
     }
 
     unlink(file, stream) {
+      const cssFile = file.replace(/\.scss$/, ".css")
+      if (fs.existsSync(cssFile)) {
+        fs.unlinkSync(cssFile)
+      }
       const importingFiles = this.tree.findImportingFiles(file)
       this.tree.removeImportingFile(file)
       this.tree.removeImportedFile(file)
