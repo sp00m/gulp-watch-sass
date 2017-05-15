@@ -51,7 +51,7 @@ gulp.task("sass:watch", () => {
   gulp.watch([
     "./public/**/*.scss",
     "!./public/libs/**/*"
-  ], ["sass"])
+  ], ["sass"]);
 });
 ```
 
