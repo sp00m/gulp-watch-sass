@@ -1,12 +1,11 @@
 const fs = require("fs")
 const path = require("path")
-const vinylFile = require("vinyl-file")
 
 const cwd = path.resolve(process.cwd(), "test/")
 
 const toPath = (fileName) => path.resolve(cwd, fileName)
 
-const toVinyl = (fileName) => vinylFile.readSync(toPath(fileName))
+const exists = (fileName) => fs.existsSync(toPath(fileName))
 
 const create = (fileName, content) => fs.writeFileSync(toPath(fileName), content)
 
@@ -20,4 +19,4 @@ const assertStreamContainsOnly = (stream, ...fileNames) => {
   files.should.have.length(fileNames.length)
 }
 
-module.exports = { cwd, toPath, toVinyl, create, remove, assertStreamContainsOnly }
+module.exports = { cwd, toPath, exists, create, remove, assertStreamContainsOnly }
