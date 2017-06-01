@@ -3,7 +3,7 @@ const sinon = require("sinon")
 const globby = require("globby")
 
 const { ImportTree, EventHandler } = require("../")
-const { cwd, toPath, exists, create, remove, assertStreamContainsOnly } = require("./_utils")
+const { cwd, toVinyl, exists, create, remove, assertStreamContainsOnly } = require("./_utils")
 
 describe("gulp-watch-sass", () => {
 
@@ -18,7 +18,7 @@ describe("gulp-watch-sass", () => {
     const tree = new ImportTree(cwd, "*.scss", warn).build()
     const handler = new EventHandler(tree)
 
-    const stream = handler.change(toPath("c.scss"), [])
+    const stream = handler.change(toVinyl("c.scss"), [])
     assertStreamContainsOnly(stream, "a.scss", "b.scss")
 
     warn.called.should.be.false()
@@ -37,7 +37,7 @@ describe("gulp-watch-sass", () => {
     const tree = new ImportTree(cwd, "*.scss", warn).build()
     const handler = new EventHandler(tree)
 
-    const stream = handler.change(toPath("c.scss"), [])
+    const stream = handler.change(toVinyl("c.scss"), [])
     assertStreamContainsOnly(stream, "a.scss", "b1.scss", "b2.scss")
 
     warn.called.should.be.false()
@@ -56,8 +56,8 @@ describe("gulp-watch-sass", () => {
     const handler = new EventHandler(tree)
 
     create("b.scss", "@import 'c';")
-    handler.change(toPath("b.scss"), [])
-    const stream = handler.change(toPath("c.scss"), [])
+    handler.change(toVinyl("b.scss"), [])
+    const stream = handler.change(toVinyl("c.scss"), [])
     assertStreamContainsOnly(stream, "a.scss", "b.scss")
 
     warn.called.should.be.false()
@@ -76,8 +76,8 @@ describe("gulp-watch-sass", () => {
     const handler = new EventHandler(tree)
 
     create("b.scss", "span { border: 0; }")
-    handler.change(toPath("b.scss"), [])
-    const stream = handler.change(toPath("c.scss"), [])
+    handler.change(toVinyl("b.scss"), [])
+    const stream = handler.change(toVinyl("c.scss"), [])
     assertStreamContainsOnly(stream)
 
     warn.called.should.be.false()
@@ -95,7 +95,7 @@ describe("gulp-watch-sass", () => {
     const handler = new EventHandler(tree)
 
     create("a.scss", "@import 'b';")
-    const stream = handler.add(toPath("a.scss"), [])
+    const stream = handler.add(toVinyl("a.scss"), [])
     assertStreamContainsOnly(stream)
 
     warn.called.should.be.false()
@@ -113,8 +113,8 @@ describe("gulp-watch-sass", () => {
     const handler = new EventHandler(tree)
 
     create("a.scss", "@import 'b';")
-    handler.add(toPath("a.scss"), [])
-    const stream = handler.change(toPath("c.scss"), [])
+    handler.add(toVinyl("a.scss"), [])
+    const stream = handler.change(toVinyl("c.scss"), [])
     assertStreamContainsOnly(stream, "a.scss", "b.scss")
 
     warn.called.should.be.false()
@@ -132,7 +132,7 @@ describe("gulp-watch-sass", () => {
     const tree = new ImportTree(cwd, "*.scss", warn).build()
     const handler = new EventHandler(tree)
 
-    const stream = handler.unlink(toPath("b.scss"), [])
+    const stream = handler.unlink(toVinyl("b.scss"), [])
     assertStreamContainsOnly(stream, "a.scss")
 
     warn.called.should.be.false()
@@ -150,7 +150,7 @@ describe("gulp-watch-sass", () => {
     const handler = new EventHandler(tree)
 
     exists("a.css").should.be.true()
-    handler.unlink(toPath("a.scss"))
+    handler.unlink(toVinyl("a.scss"))
     exists("a.css").should.be.false()
 
     warn.called.should.be.false()
@@ -169,8 +169,8 @@ describe("gulp-watch-sass", () => {
     const tree = new ImportTree(cwd, "*.scss", warn).build()
     const handler = new EventHandler(tree)
 
-    handler.unlink(toPath("b1.scss"), [])
-    const stream = handler.change(toPath("c.scss"), [])
+    handler.unlink(toVinyl("b1.scss"), [])
+    const stream = handler.change(toVinyl("c.scss"), [])
     assertStreamContainsOnly(stream, "a.scss", "b2.scss")
 
     warn.called.should.be.false()
@@ -188,8 +188,8 @@ describe("gulp-watch-sass", () => {
     const tree = new ImportTree(cwd, "*.scss", warn).build()
     const handler = new EventHandler(tree)
 
-    handler.unlink(toPath("b.scss"), [])
-    const stream = handler.change(toPath("c.scss"), [])
+    handler.unlink(toVinyl("b.scss"), [])
+    const stream = handler.change(toVinyl("c.scss"), [])
     assertStreamContainsOnly(stream)
 
     warn.called.should.be.false()
