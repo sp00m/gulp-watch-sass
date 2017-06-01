@@ -160,8 +160,9 @@ const watchSass = (globs, options = {}) => {
   const handler = new EventHandler(tree)
   return watch(globs)
     .pipe(fn(function (vinyl) {
+      this.push(vinyl)
       handler[vinyl.event](vinyl.history[0], this)
-    }))
+    }, false))
 }
 
 module.exports = Object.assign(watchSass, { ImportTree, EventHandler })
