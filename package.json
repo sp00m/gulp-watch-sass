@@ -1,6 +1,6 @@
 {
   "name": "gulp-watch-sass",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Watches SASS files, adding @import-ing files to the stream",
   "keywords": [
     "gulpplugin",
