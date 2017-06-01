@@ -111,9 +111,9 @@ const ImportTree = (() => {
 
 const EventHandler = (() => {
 
-  const addToStream = (files, stream) => {
+  const addToStream = (base, files, stream) => {
     files.forEach((file) => {
-      stream.push(vinylFile.readSync(file))
+      stream.push(vinylFile.readSync(file, { base }))
     })
   }
 
@@ -123,18 +123,21 @@ const EventHandler = (() => {
       this.tree = tree
     }
 
-    add(file, stream) {
+    add(vinyl, stream) {
+      const file = vinyl.history[0]
       this.tree.readFile(file)
-      addToStream(this.tree.findImportingFiles(file), stream)
+      addToStream(vinyl.base, this.tree.findImportingFiles(file), stream)
       return stream
     }
 
-    change(file, stream) {
+    change(vinyl, stream) {
+      const file = vinyl.history[0]
       this.tree.removeImportingFile(file)
-      return this.add(file, stream)
+      return this.add(vinyl, stream)
     }
 
-    unlink(file, stream) {
+    unlink(vinyl, stream) {
+      const file = vinyl.history[0]
       const cssFile = file.replace(/\.scss$/, ".css")
       if (fs.existsSync(cssFile)) {
         fs.unlinkSync(cssFile)
@@ -142,7 +145,7 @@ const EventHandler = (() => {
       const importingFiles = this.tree.findImportingFiles(file)
       this.tree.removeImportingFile(file)
       this.tree.removeImportedFile(file)
-      addToStream(importingFiles, stream)
+      addToStream(vinyl.base, importingFiles, stream)
       return stream
     }
 
@@ -161,7 +164,7 @@ const watchSass = (globs, options = {}) => {
   return watch(globs)
     .pipe(fn(function (vinyl) {
       this.push(vinyl)
-      handler[vinyl.event](vinyl.history[0], this)
+      handler[vinyl.event](vinyl, this)
     }, false))
 }
 
