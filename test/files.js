@@ -3,7 +3,7 @@ const sinon = require("sinon")
 const globby = require("globby")
 
 const { ImportTree, EventHandler } = require("../")
-const { cwd, toPath, create, remove, assertStreamContainsOnly } = require("./_utils")
+const { cwd, toVinyl, create, remove, assertStreamContainsOnly } = require("./_utils")
 
 describe("gulp-watch-sass", () => {
 
@@ -17,7 +17,7 @@ describe("gulp-watch-sass", () => {
     const tree = new ImportTree(cwd, "*.scss").build()
     const handler = new EventHandler(tree)
 
-    const stream = handler.change(toPath("b.scss"), [])
+    const stream = handler.change(toVinyl("b.scss"), [])
     assertStreamContainsOnly(stream, "a.scss")
 
     warn.called.should.be.false()
@@ -34,7 +34,7 @@ describe("gulp-watch-sass", () => {
     const tree = new ImportTree(cwd, "*.scss").build()
     const handler = new EventHandler(tree)
 
-    const stream = handler.change(toPath("b.scss"), [])
+    const stream = handler.change(toVinyl("b.scss"), [])
     assertStreamContainsOnly(stream, "a.scss")
 
     warn.called.should.be.false()
@@ -51,7 +51,7 @@ describe("gulp-watch-sass", () => {
     const tree = new ImportTree(cwd, "*.scss").build()
     const handler = new EventHandler(tree)
 
-    const stream = handler.change(toPath("_b.scss"), [])
+    const stream = handler.change(toVinyl("_b.scss"), [])
     assertStreamContainsOnly(stream, "a.scss")
 
     warn.called.should.be.false()
@@ -68,7 +68,7 @@ describe("gulp-watch-sass", () => {
     const tree = new ImportTree(cwd, "*.scss").build()
     const handler = new EventHandler(tree)
 
-    const stream = handler.change(toPath("_b.scss"), [])
+    const stream = handler.change(toVinyl("_b.scss"), [])
     assertStreamContainsOnly(stream, "a.scss")
 
     warn.called.should.be.false()
@@ -85,7 +85,7 @@ describe("gulp-watch-sass", () => {
     const tree = new ImportTree(cwd, "*.scss").build()
     const handler = new EventHandler(tree)
 
-    const stream = handler.change(toPath("a.scss"), [])
+    const stream = handler.change(toVinyl("a.scss"), [])
     assertStreamContainsOnly(stream)
 
     warn.called.should.be.false()
@@ -103,7 +103,7 @@ describe("gulp-watch-sass", () => {
     const tree = new ImportTree(cwd, "*.scss").build()
     const handler = new EventHandler(tree)
 
-    const stream = handler.change(toPath("c.scss"), [])
+    const stream = handler.change(toVinyl("c.scss"), [])
     assertStreamContainsOnly(stream)
 
     warn.called.should.be.false()
