@@ -17,7 +17,7 @@ Watches for SASS files modifications thanks to [`gulp-watch`](https://www.npmjs.
 ### Install
 
 ```
-npm intall --save-dev gulp-watch-sass
+npm install --save-dev gulp-watch-sass
 ```
 
 ### Usage
