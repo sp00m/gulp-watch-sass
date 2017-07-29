@@ -197,7 +197,9 @@ const watchSass = (globs, options = {}) => {
   const handler = new EventHandler(tree)
   return watch(globs)
     .pipe(fn(function (vinyl) {
-      this.push(vinyl)
+      if (!vinyl.history[0].endsWith(".css")) {
+        this.push(vinyl)
+      }
       handler[vinyl.event](vinyl, this)
     }, false))
 }
