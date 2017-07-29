@@ -195,7 +195,7 @@ const watchSass = (globs, options = {}) => {
   options.warn = options.warn || warn
   const tree = new ImportTree(options.cwd, globs, options.warn).build()
   const handler = new EventHandler(tree)
-  return watch(globs)
+  return watch(globs, { base: options.base })
     .pipe(fn(function (vinyl) {
       if (!vinyl.history[0].endsWith(".css")) {
         this.push(vinyl)
