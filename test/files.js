@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 require("should")
 const sinon = require("sinon")
 const globby = require("globby")
@@ -7,113 +9,122 @@ const { cwd, toVinyl, create, remove, assertStreamContainsOnly } = require("./_u
 
 describe("gulp-watch-sass", () => {
 
-  it("should handle SASS files with .scss extension", () => {
+  beforeEach(() => {
+    sinon.spy(console, "warn")
+  })
 
-    const warn = sinon.spy()
+  afterEach(() => {
+    console.warn.restore()
+  })
+
+  afterEach(() => {
+    globby.sync("*.scss", { cwd }).forEach(remove)
+  })
+
+  it("should handle SASS files with .scss extension", () => {
 
     create("a.scss", "@import 'b.scss';")
     create("b.scss", "div { margin: 0; }")
 
-    const tree = new ImportTree(cwd, "*.scss").build()
+    const tree = new ImportTree(cwd, "*.scss", console.warn).build()
     const handler = new EventHandler(tree)
 
     const stream = handler.change(toVinyl("b.scss"), [])
     assertStreamContainsOnly(stream, "a.scss")
 
-    warn.called.should.be.false()
+    console.warn.called.should.be.false()
 
   })
 
   it("should handle SASS files without .scss extension", () => {
 
-    const warn = sinon.spy()
-
     create("a.scss", "@import 'b';")
     create("b.scss", "div { margin: 0; }")
 
-    const tree = new ImportTree(cwd, "*.scss").build()
+    const tree = new ImportTree(cwd, "*.scss", console.warn).build()
     const handler = new EventHandler(tree)
 
     const stream = handler.change(toVinyl("b.scss"), [])
     assertStreamContainsOnly(stream, "a.scss")
 
-    warn.called.should.be.false()
+    console.warn.called.should.be.false()
 
   })
 
   it("should handle partials with .scss extension", () => {
 
-    const warn = sinon.spy()
-
     create("a.scss", "@import 'b.scss';")
     create("_b.scss", "div { margin: 0; }")
 
-    const tree = new ImportTree(cwd, "*.scss").build()
+    const tree = new ImportTree(cwd, "*.scss", console.warn).build()
     const handler = new EventHandler(tree)
 
     const stream = handler.change(toVinyl("_b.scss"), [])
     assertStreamContainsOnly(stream, "a.scss")
 
-    warn.called.should.be.false()
+    console.warn.called.should.be.false()
 
   })
 
   it("should handle partials without .scss extension", () => {
 
-    const warn = sinon.spy()
-
     create("a.scss", "@import 'b';")
     create("_b.scss", "div { margin: 0; }")
 
-    const tree = new ImportTree(cwd, "*.scss").build()
+    const tree = new ImportTree(cwd, "*.scss", console.warn).build()
     const handler = new EventHandler(tree)
 
     const stream = handler.change(toVinyl("_b.scss"), [])
     assertStreamContainsOnly(stream, "a.scss")
 
-    warn.called.should.be.false()
+    console.warn.called.should.be.false()
 
   })
 
   it("should handle CSS files with .css extension", () => {
 
-    const warn = sinon.spy()
-
     create("a.scss", "@import 'b.css';")
     create("b.css", "div { margin: 0; }")
 
-    const tree = new ImportTree(cwd, "*.scss").build()
+    const tree = new ImportTree(cwd, "*.scss", console.warn).build()
     const handler = new EventHandler(tree)
 
-    const stream = handler.change(toVinyl("a.scss"), [])
-    assertStreamContainsOnly(stream)
+    const stream = handler.change(toVinyl("b.css"), [])
+    assertStreamContainsOnly(stream, "a.scss")
 
-    warn.called.should.be.false()
+    console.warn.called.should.be.false()
+
+  })
+
+  it("should handle CSS files without .css extension", () => {
+
+    create("a.scss", "@import 'b';")
+    create("b.css", "div { margin: 0; }")
+
+    const tree = new ImportTree(cwd, "*.scss", console.warn).build()
+    const handler = new EventHandler(tree)
+
+    const stream = handler.change(toVinyl("b.css"), [])
+    assertStreamContainsOnly(stream, "a.scss")
+
+    console.warn.called.should.be.false()
 
   })
 
   it("should ignore commented lines", () => {
 
-    const warn = sinon.spy()
-
     create("a.scss", "// @import 'b';")
     create("b.scss", "/* @import 'c'; */")
     create("c.scss", "div { margin: 0; }")
 
-    const tree = new ImportTree(cwd, "*.scss").build()
+    const tree = new ImportTree(cwd, "*.scss", console.warn).build()
     const handler = new EventHandler(tree)
 
     const stream = handler.change(toVinyl("c.scss"), [])
     assertStreamContainsOnly(stream)
 
-    warn.called.should.be.false()
+    console.warn.called.should.be.false()
 
-  })
-
-  afterEach(() => {
-    globby.sync("*.scss", { cwd }).forEach((fileName) => {
-      remove(fileName)
-    })
   })
 
 })

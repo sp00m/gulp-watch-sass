@@ -53,7 +53,7 @@
     "lines-around-comment": "error",
     "lines-around-directive": "error",
     "max-depth": "error",
-    "max-len": ["error", { "code": 120, "ignoreStrings": true }],
+    "max-len": ["error", { "code": 150, "ignoreStrings": true }],
     "max-lines": ["error", 400],
     "max-nested-callbacks": "error",
     "max-params": "error",

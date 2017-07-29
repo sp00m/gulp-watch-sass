@@ -23,21 +23,51 @@ const ImportTree = (() => {
     }
   }
 
+  function resolveImportCandidates(importingFile, importedPath, candidates) {
+    const existingCandidates = candidates.filter((candidate) => fs.existsSync(candidate))
+    switch (existingCandidates.length) {
+
+    case 0:
+      throw new Error(`Could not resolve '${importedPath}' from file '${importingFile}': file not found`)
+
+    case 1:
+      return existingCandidates[0]
+
+    default:
+      throw new Error(`Could not resolve ambiguous '${importedPath}' from file '${importingFile}', following existing candidates exist:\n- ${existingCandidates.join("\n- ")}`)
+
+    }
+  }
+
+  function resolveImportWithExtension(importingFile, importedPath, importedFile) {
+    const candidates = [
+      importedFile
+    ]
+    if ((/[/\\][^_/\\][^/\\]*\.scss$/).test(importedFile)) {
+      candidates.push(importedFile.replace(/([^/\\]+)$/, "_$1"))
+    }
+    return resolveImportCandidates.call(this, importingFile, importedPath, candidates)
+  }
+
+  function resolveImportWithoutExtension(importingFile, importedPath, importedFile) {
+    const candidates = [
+      `${importedFile}.scss`,
+      `${importedFile}.css`
+    ]
+    if ((/[/\\][^_/\\][^/\\]*$/).test(importedFile)) {
+      candidates.push(importedFile.replace(/([^/\\]+)$/, "_$1.scss"))
+    }
+    return resolveImportCandidates.call(this, importingFile, importedPath, candidates)
+  }
+
   function resolveImport(importingFile, importedPath) {
     let importedFile = path.resolve(importingFile.replace(/([^/\\]+)$/, ""), importedPath)
-    if (!(/\.s?css$/).test(importedFile)) {
-      importedFile += ".scss"
-    }
-    let exists = fs.existsSync(importedFile)
-    if (!exists && importedFile.endsWith(".scss")) {
-      importedFile = importedFile.replace(/([^/\\]+)$/, "_$1")
-      exists = fs.existsSync(importedFile)
-    }
-    if (!exists) {
-      this.warn(`Could not resolve '${importedPath}' from file '${importingFile}': file not found`)
+    if ((/\.s?css$/).test(importedFile)) {
+      importedFile = resolveImportWithExtension.call(this, importingFile, importedPath, importedFile)
     } else {
-      gatherImport.call(this, importingFile, importedFile)
+      importedFile = resolveImportWithoutExtension.call(this, importingFile, importedPath, importedFile)
     }
+    gatherImport.call(this, importingFile, importedFile)
   }
 
   return class {
@@ -57,7 +87,11 @@ const ImportTree = (() => {
       const importRegex = /^[ \t]*@import[ \t]+(["'])([^\r\n]+?)\1/gm
       let match = null
       while ((match = importRegex.exec(content)) !== null) {
-        resolveImport.call(this, file, match[2])
+        try {
+          resolveImport.call(this, file, match[2])
+        } catch (e) {
+          this.warn(e.message)
+        }
       }
     }
 
