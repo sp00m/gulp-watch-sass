@@ -72,9 +72,9 @@ const ImportTree = (() => {
 
   return class {
 
-    constructor(cwd, globs, warn) {
-      this.cwd = cwd
+    constructor(globs, cwd = process.cwd(), warn = (message) => gutil.log(gutil.colors.yellow(message))) {
       this.globs = globs
+      this.cwd = cwd
       this.warn = warn
       this.desc = {}
       this.asc = {}
@@ -187,15 +187,10 @@ const EventHandler = (() => {
 
 })()
 
-const cwd = process.cwd()
-const warn = (message) => gutil.log(gutil.colors.yellow(message))
-
-const watchSass = (globs, options = {}) => {
-  options.cwd = options.cwd || cwd
-  options.warn = options.warn || warn
-  const tree = new ImportTree(options.cwd, globs, options.warn).build()
+const watchSass = (globs, options) => {
+  const tree = new ImportTree(globs).build()
   const handler = new EventHandler(tree)
-  return watch(globs, { base: options.base })
+  return watch(globs, options)
     .pipe(fn(function (vinyl) {
       if (!vinyl.history[0].endsWith(".css")) {
         this.push(vinyl)
