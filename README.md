@@ -47,6 +47,13 @@ You can watch for CSS files modifications in addition to SASS ones. In this case
 
 This object is passed to the [`gulp-watch` options](https://www.npmjs.com/package/gulp-watch#options) directly.
 
+##### options.base
+
+Type: `String`  
+Default: `"."`
+
+Used to resolve absolute `@import`s (cwd / base / path).
+
 ## Why?
 
 ### `gulp.watch` recompiles all the SASS files:

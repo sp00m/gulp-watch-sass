@@ -21,6 +21,21 @@ describe("gulp-watch-sass", () => {
     globby.sync("*.scss", { cwd }).forEach(remove)
   })
 
+  it("should handle absolute paths", () => {
+
+    create("a.scss", "@import '/b.scss';")
+    create("b.scss", "div { margin: 0; }")
+
+    const tree = new ImportTree("*.scss", { cwd, warn: console.warn }).build()
+    const handler = new EventHandler(tree)
+
+    const stream = handler.change(toVinyl("b.scss"), [])
+    assertStreamContainsOnly(stream, "a.scss")
+
+    console.warn.called.should.be.false()
+
+  })
+
   it("should handle SASS files with .scss extension", () => {
 
     create("a.scss", "@import 'b.scss';")
