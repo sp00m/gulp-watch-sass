@@ -27,7 +27,7 @@ describe("gulp-watch-sass", () => {
     create("b.scss", "@import 'c';")
     create("c.scss", "div { margin: 0; }")
 
-    const tree = new ImportTree("*.scss", cwd, console.warn).build()
+    const tree = new ImportTree("*.scss", { cwd, warn: console.warn }).build()
     const handler = new EventHandler(tree)
 
     const stream = handler.change(toVinyl("c.scss"), [])
@@ -44,7 +44,7 @@ describe("gulp-watch-sass", () => {
     create("b2.scss", "@import 'c';")
     create("c.scss", "div { margin: 0; }")
 
-    const tree = new ImportTree("*.scss", cwd, console.warn).build()
+    const tree = new ImportTree("*.scss", { cwd, warn: console.warn }).build()
     const handler = new EventHandler(tree)
 
     const stream = handler.change(toVinyl("c.scss"), [])
@@ -60,7 +60,7 @@ describe("gulp-watch-sass", () => {
     create("b.scss", "span { border: 0; }")
     create("c.scss", "div { margin: 0; }")
 
-    const tree = new ImportTree("*.scss", cwd, console.warn).build()
+    const tree = new ImportTree("*.scss", { cwd, warn: console.warn }).build()
     const handler = new EventHandler(tree)
 
     create("b.scss", "@import 'c';")
@@ -78,7 +78,7 @@ describe("gulp-watch-sass", () => {
     create("b.scss", "@import 'c';")
     create("c.scss", "div { margin: 0; }")
 
-    const tree = new ImportTree("*.scss", cwd, console.warn).build()
+    const tree = new ImportTree("*.scss", { cwd, warn: console.warn }).build()
     const handler = new EventHandler(tree)
 
     create("b.scss", "span { border: 0; }")
@@ -95,7 +95,7 @@ describe("gulp-watch-sass", () => {
     create("b.scss", "@import 'c';")
     create("c.scss", "div { margin: 0; }")
 
-    const tree = new ImportTree("*.scss", cwd, console.warn).build()
+    const tree = new ImportTree("*.scss", { cwd, warn: console.warn }).build()
     const handler = new EventHandler(tree)
 
     create("a.scss", "@import 'b';")
@@ -111,7 +111,7 @@ describe("gulp-watch-sass", () => {
     create("b.scss", "@import 'c';")
     create("c.scss", "div { margin: 0; }")
 
-    const tree = new ImportTree("*.scss", cwd, console.warn).build()
+    const tree = new ImportTree("*.scss", { cwd, warn: console.warn }).build()
     const handler = new EventHandler(tree)
 
     create("a.scss", "@import 'b';")
@@ -129,7 +129,7 @@ describe("gulp-watch-sass", () => {
     create("b.scss", "@import 'c';")
     create("c.scss", "div { margin: 0; }")
 
-    const tree = new ImportTree("*.scss", cwd, console.warn).build()
+    const tree = new ImportTree("*.scss", { cwd, warn: console.warn }).build()
     const handler = new EventHandler(tree)
 
     const stream = handler.unlink(toVinyl("b.scss"), [])
@@ -144,7 +144,7 @@ describe("gulp-watch-sass", () => {
     create("a.css", "div { margin: 0; }")
     create("a.scss", "div { margin: 0; }")
 
-    const tree = new ImportTree("*.scss", cwd, console.warn).build()
+    const tree = new ImportTree("*.scss", { cwd, warn: console.warn }).build()
     const handler = new EventHandler(tree)
 
     exists("a.css").should.be.true()
@@ -162,7 +162,7 @@ describe("gulp-watch-sass", () => {
     create("b2.scss", "@import 'c';")
     create("c.scss", "div { margin: 0; }")
 
-    const tree = new ImportTree("*.scss", cwd, console.warn).build()
+    const tree = new ImportTree("*.scss", { cwd, warn: console.warn }).build()
     const handler = new EventHandler(tree)
 
     handler.unlink(toVinyl("b1.scss"), [])
@@ -179,7 +179,7 @@ describe("gulp-watch-sass", () => {
     create("b.scss", "@import 'c';")
     create("c.scss", "div { margin: 0; }")
 
-    const tree = new ImportTree("*.scss", cwd, console.warn).build()
+    const tree = new ImportTree("*.scss", { cwd, warn: console.warn }).build()
     const handler = new EventHandler(tree)
 
     handler.unlink(toVinyl("b.scss"), [])

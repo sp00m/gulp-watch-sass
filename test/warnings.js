@@ -26,7 +26,7 @@ describe("gulp-watch-sass", () => {
     create("a.scss", ["@import 'b.scss';", "@import 'b.scss';"].join("\n"))
     create("b.scss", "div { margin: 0; }")
 
-    new ImportTree("*.scss", cwd, console.warn).build()
+    new ImportTree("*.scss", { cwd, warn: console.warn }).build()
 
     console.warn.called.should.be.true()
 
@@ -36,7 +36,7 @@ describe("gulp-watch-sass", () => {
 
     create("a.scss", "@import 'b.scss';")
 
-    new ImportTree("*.scss", cwd, console.warn).build()
+    new ImportTree("*.scss", { cwd, warn: console.warn }).build()
 
     console.warn.called.should.be.true()
 
@@ -48,7 +48,7 @@ describe("gulp-watch-sass", () => {
     create("b.scss", "div { margin: 0; }")
     create("_b.scss", "div { margin: 0; }")
 
-    new ImportTree("*.scss", cwd, console.warn).build()
+    new ImportTree("*.scss", { cwd, warn: console.warn }).build()
 
     console.warn.called.should.be.true()
 
@@ -60,7 +60,7 @@ describe("gulp-watch-sass", () => {
     create("b.scss", "div { margin: 0; }")
     create("_b.scss", "div { margin: 0; }")
 
-    new ImportTree("*.scss", cwd, console.warn).build()
+    new ImportTree("*.scss", { cwd, warn: console.warn }).build()
 
     console.warn.called.should.be.true()
 
@@ -72,7 +72,7 @@ describe("gulp-watch-sass", () => {
     create("b.css", "div { margin: 0; }")
     create("_b.scss", "div { margin: 0; }")
 
-    new ImportTree("*.scss", cwd, console.warn).build()
+    new ImportTree("*.scss", { cwd, warn: console.warn }).build()
 
     console.warn.called.should.be.true()
 
@@ -84,7 +84,7 @@ describe("gulp-watch-sass", () => {
     create("b.css", "div { margin: 0; }")
     create("b.scss", "div { margin: 0; }")
 
-    new ImportTree("*.scss", cwd, console.warn).build()
+    new ImportTree("*.scss", { cwd, warn: console.warn }).build()
 
     console.warn.called.should.be.true()
 
@@ -97,7 +97,7 @@ describe("gulp-watch-sass", () => {
     create("b.scss", "div { margin: 0; }")
     create("_b.scss", "div { margin: 0; }")
 
-    new ImportTree("*.scss", cwd, console.warn).build()
+    new ImportTree("*.scss", { cwd, warn: console.warn }).build()
 
     console.warn.called.should.be.true()
 
