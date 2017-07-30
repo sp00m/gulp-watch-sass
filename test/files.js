@@ -51,7 +51,7 @@ describe("gulp-watch-sass", () => {
 
   })
 
-  it("should handle partials with .scss extension", () => {
+  it("should handle partials without underscore with .scss extension", () => {
 
     create("a.scss", "@import 'b.scss';")
     create("_b.scss", "div { margin: 0; }")
@@ -66,9 +66,39 @@ describe("gulp-watch-sass", () => {
 
   })
 
-  it("should handle partials without .scss extension", () => {
+  it("should handle partials without underscore without .scss extension", () => {
 
     create("a.scss", "@import 'b';")
+    create("_b.scss", "div { margin: 0; }")
+
+    const tree = new ImportTree("*.scss", cwd, console.warn).build()
+    const handler = new EventHandler(tree)
+
+    const stream = handler.change(toVinyl("_b.scss"), [])
+    assertStreamContainsOnly(stream, "a.scss")
+
+    console.warn.called.should.be.false()
+
+  })
+
+  it("should handle partials with underscore with .scss extension", () => {
+
+    create("a.scss", "@import '_b.scss';")
+    create("_b.scss", "div { margin: 0; }")
+
+    const tree = new ImportTree("*.scss", cwd, console.warn).build()
+    const handler = new EventHandler(tree)
+
+    const stream = handler.change(toVinyl("_b.scss"), [])
+    assertStreamContainsOnly(stream, "a.scss")
+
+    console.warn.called.should.be.false()
+
+  })
+
+  it("should handle partials with underscore without .scss extension", () => {
+
+    create("a.scss", "@import '_b';")
     create("_b.scss", "div { margin: 0; }")
 
     const tree = new ImportTree("*.scss", cwd, console.warn).build()

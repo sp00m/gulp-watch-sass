@@ -1,6 +1,6 @@
 {
   "name": "gulp-watch-sass",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Watches SASS files, adding @import-ing files to the stream",
   "keywords": [
     "gulpplugin",
@@ -26,14 +26,14 @@
     "vinyl-file": "^3.0.0"
   },
   "devDependencies": {
-    "coveralls": "^2.11.16",
-    "eslint": "^3.14.1",
-    "husky": "^0.13.1",
+    "coveralls": "^2.13.1",
+    "eslint": "^4.3.0",
+    "husky": "^0.14.3",
     "istanbul": "^0.4.5",
-    "mocha": "^3.2.0",
-    "should": "^11.2.0",
-    "sinon": "^1.17.7",
-    "snyk": "^1.25.0"
+    "mocha": "^3.4.2",
+    "should": "^11.2.1",
+    "sinon": "^2.4.1",
+    "snyk": "^1.37.0"
   },
   "scripts": {
     "commitmsg": "node ./.hooks/commit-msg",
