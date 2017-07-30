@@ -6,6 +6,15 @@ const vinylFile = require("vinyl-file")
 const watch = require("gulp-watch")
 const gutil = require("gulp-util")
 
+const MULTILINE_COMMENTS = /\/\*[\s\S]*?\*\//g
+const SINGLELINE_COMMENTS = /[ \t]*\/\/[^\r\n]*/g
+const IMPORT_STATEMENTS = /^[ \t]*@import[ \t]+(["'])([^\r\n]+?)\1/gm
+const SCSS_EXTENSION = /\.scss$/
+const STYLESHEET_EXTENSION = /\.s?css$/
+const FILENAME = /([^/\\]+)$/
+const FILENAME_WITHOUT_LEADING_UNDERSCORE = /[/\\][^_/\\][^/\\]*$/
+const SCSS_FILENAME_WITHOUT_LEADING_UNDERSCORE = /[/\\][^_/\\][^/\\]*\.scss$/
+
 const ImportTree = (() => {
 
   function gatherImport(importingFile, importedFile) {
@@ -34,7 +43,7 @@ const ImportTree = (() => {
       return existingCandidates[0]
 
     default:
-      throw new Error(`Could not resolve ambiguous '${importedPath}' from file '${importingFile}', following existing candidates exist:\n- ${existingCandidates.join("\n- ")}`)
+      throw new Error(`Could not resolve ambiguous '${importedPath}' from file '${importingFile}', following candidates exist:\n- ${existingCandidates.join("\n- ")}`)
 
     }
   }
@@ -43,8 +52,8 @@ const ImportTree = (() => {
     const candidates = [
       importedFile
     ]
-    if ((/[/\\][^_/\\][^/\\]*\.scss$/).test(importedFile)) {
-      candidates.push(importedFile.replace(/([^/\\]+)$/, "_$1"))
+    if (SCSS_FILENAME_WITHOUT_LEADING_UNDERSCORE.test(importedFile)) {
+      candidates.push(importedFile.replace(FILENAME, "_$1"))
     }
     return resolveImportCandidates.call(this, importingFile, importedPath, candidates)
   }
@@ -54,20 +63,17 @@ const ImportTree = (() => {
       `${importedFile}.scss`,
       `${importedFile}.css`
     ]
-    if ((/[/\\][^_/\\][^/\\]*$/).test(importedFile)) {
-      candidates.push(importedFile.replace(/([^/\\]+)$/, "_$1.scss"))
+    if (FILENAME_WITHOUT_LEADING_UNDERSCORE.test(importedFile)) {
+      candidates.push(importedFile.replace(FILENAME, "_$1.scss"))
     }
     return resolveImportCandidates.call(this, importingFile, importedPath, candidates)
   }
 
   function resolveImport(importingFile, importedPath) {
-    let importedFile = path.resolve(importingFile.replace(/([^/\\]+)$/, ""), importedPath)
-    if ((/\.s?css$/).test(importedFile)) {
-      importedFile = resolveImportWithExtension.call(this, importingFile, importedPath, importedFile)
-    } else {
-      importedFile = resolveImportWithoutExtension.call(this, importingFile, importedPath, importedFile)
-    }
-    gatherImport.call(this, importingFile, importedFile)
+    const importedFile = path.resolve(importingFile.replace(FILENAME, ""), importedPath)
+    gatherImport.call(this, importingFile, STYLESHEET_EXTENSION.test(importedFile)
+      ? resolveImportWithExtension.call(this, importingFile, importedPath, importedFile)
+      : resolveImportWithoutExtension.call(this, importingFile, importedPath, importedFile))
   }
 
   return class {
@@ -81,16 +87,18 @@ const ImportTree = (() => {
     }
 
     readFile(file) {
-      const content = fs.readFileSync(file, "utf8")
-        .replace(/\/\*[\s\S]*?\*\//g, "")
-        .replace(/[ \t]*\/\/[^\r\n]*/g, "")
-      const importRegex = /^[ \t]*@import[ \t]+(["'])([^\r\n]+?)\1/gm
-      let match = null
-      while ((match = importRegex.exec(content)) !== null) {
-        try {
-          resolveImport.call(this, file, match[2])
-        } catch (e) {
-          this.warn(e.message)
+      if (file.endsWith(".scss")) {
+        const content = fs.readFileSync(file, "utf8")
+          .replace(MULTILINE_COMMENTS, "")
+          .replace(SINGLELINE_COMMENTS, "")
+        IMPORT_STATEMENTS.lastIndex = 0
+        let match = null
+        while (null !== (match = IMPORT_STATEMENTS.exec(content))) {
+          try {
+            resolveImport.call(this, file, match[2])
+          } catch (e) {
+            this.warn(e.message)
+          }
         }
       }
     }
@@ -123,7 +131,7 @@ const ImportTree = (() => {
       delete this.asc[file]
       Object.keys(this.desc).forEach((importingFile) => {
         this.desc[importingFile] = this.desc[importingFile].filter((importedFile) => importedFile !== file)
-        if (this.desc[importingFile].length === 0) {
+        if (0 === this.desc[importingFile].length) {
           delete this.desc[importingFile]
         }
       })
@@ -133,7 +141,7 @@ const ImportTree = (() => {
       delete this.desc[file]
       Object.keys(this.asc).forEach((importedFile) => {
         this.asc[importedFile] = this.asc[importedFile].filter((importingFile) => importingFile !== file)
-        if (this.asc[importedFile].length === 0) {
+        if (0 === this.asc[importedFile].length) {
           delete this.asc[importedFile]
         }
       })
@@ -172,8 +180,8 @@ const EventHandler = (() => {
 
     unlink(vinyl, stream) {
       const file = vinyl.history[0]
-      const cssFile = file.replace(/\.scss$/, ".css")
-      if (fs.existsSync(cssFile)) {
+      const cssFile = file.replace(SCSS_EXTENSION, ".css")
+      if (cssFile !== file && fs.existsSync(cssFile)) {
         fs.unlinkSync(cssFile)
       }
       const importingFiles = this.tree.findImportingFiles(file)
