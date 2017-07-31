@@ -69,17 +69,14 @@ const ImportTree = (() => {
     return resolveImportCandidates.call(this, importingFile, importedPath, candidates)
   }
 
-  function resolveImportedPath(importingFile, importedPath) {
-    return importedPath.startsWith("/")
-      ? path.resolve(this.cwd, this.base, importedPath.substring(1))
-      : path.resolve(importingFile.replace(FILENAME, ""), importedPath)
-  }
-
   function resolveImport(importingFile, importedPath) {
-    const importedFile = resolveImportedPath.call(this, importingFile, importedPath)
-    gatherImport.call(this, importingFile, STYLESHEET_EXTENSION.test(importedFile)
-      ? resolveImportWithExtension.call(this, importingFile, importedPath, importedFile)
-      : resolveImportWithoutExtension.call(this, importingFile, importedPath, importedFile))
+    if (!importedPath.endsWith(".css")) {
+      // if ends with .css, then SASS will translate it into CSS rule "@import url(...)"
+      const importedFile = path.resolve(importingFile.replace(FILENAME, ""), importedPath)
+      gatherImport.call(this, importingFile, STYLESHEET_EXTENSION.test(importedFile)
+        ? resolveImportWithExtension.call(this, importingFile, importedPath, importedFile)
+        : resolveImportWithoutExtension.call(this, importingFile, importedPath, importedFile))
+    }
   }
 
   return class {
@@ -87,7 +84,6 @@ const ImportTree = (() => {
     constructor(globs, options = {}) {
       this.globs = globs
       this.cwd = options.cwd || process.cwd()
-      this.base = options.base || "."
       this.warn = options.warn || ((message) => gutil.log(gutil.colors.yellow(message)))
       this.desc = {}
       this.asc = {}
