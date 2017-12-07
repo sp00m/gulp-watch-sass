@@ -2,10 +2,9 @@
 
 require("should")
 const sinon = require("sinon")
-const globby = require("globby")
 
 const { ImportTree } = require("../")
-const { cwd, create, remove } = require("./_utils")
+const { cwd, create, clean } = require("./_utils")
 
 describe("gulp-watch-sass", () => {
 
@@ -18,7 +17,7 @@ describe("gulp-watch-sass", () => {
   })
 
   afterEach(() => {
-    globby.sync("*.{css,scss}", { cwd }).forEach(remove)
+    clean()
   })
 
   it("should warn when @import is duplicated", () => {
@@ -26,7 +25,7 @@ describe("gulp-watch-sass", () => {
     create("a.scss", ["@import 'b.scss';", "@import 'b.scss';"].join("\n"))
     create("b.scss", "div { margin: 0; }")
 
-    new ImportTree("*.scss", { cwd, warn: console.warn }).build()
+    new ImportTree("**/*.scss", { cwd, warn: console.warn }).build()
 
     console.warn.called.should.be.true()
 
@@ -36,7 +35,7 @@ describe("gulp-watch-sass", () => {
 
     create("a.scss", "@import 'b.scss';")
 
-    new ImportTree("*.scss", { cwd, warn: console.warn }).build()
+    new ImportTree("**/*.scss", { cwd, warn: console.warn }).build()
 
     console.warn.called.should.be.true()
 
@@ -48,7 +47,7 @@ describe("gulp-watch-sass", () => {
     create("b.scss", "div { margin: 0; }")
     create("_b.scss", "div { margin: 0; }")
 
-    new ImportTree("*.scss", { cwd, warn: console.warn }).build()
+    new ImportTree("**/*.scss", { cwd, warn: console.warn }).build()
 
     console.warn.called.should.be.true()
 
@@ -60,7 +59,7 @@ describe("gulp-watch-sass", () => {
     create("b.scss", "div { margin: 0; }")
     create("_b.scss", "div { margin: 0; }")
 
-    new ImportTree("*.scss", { cwd, warn: console.warn }).build()
+    new ImportTree("**/*.scss", { cwd, warn: console.warn }).build()
 
     console.warn.called.should.be.true()
 
@@ -72,7 +71,7 @@ describe("gulp-watch-sass", () => {
     create("b.css", "div { margin: 0; }")
     create("_b.scss", "div { margin: 0; }")
 
-    new ImportTree("*.scss", { cwd, warn: console.warn }).build()
+    new ImportTree("**/*.scss", { cwd, warn: console.warn }).build()
 
     console.warn.called.should.be.true()
 
@@ -84,7 +83,7 @@ describe("gulp-watch-sass", () => {
     create("b.css", "div { margin: 0; }")
     create("b.scss", "div { margin: 0; }")
 
-    new ImportTree("*.scss", { cwd, warn: console.warn }).build()
+    new ImportTree("**/*.scss", { cwd, warn: console.warn }).build()
 
     console.warn.called.should.be.true()
 
@@ -97,7 +96,7 @@ describe("gulp-watch-sass", () => {
     create("b.scss", "div { margin: 0; }")
     create("_b.scss", "div { margin: 0; }")
 
-    new ImportTree("*.scss", { cwd, warn: console.warn }).build()
+    new ImportTree("**/*.scss", { cwd, warn: console.warn }).build()
 
     console.warn.called.should.be.true()
 

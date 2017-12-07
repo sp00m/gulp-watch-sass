@@ -3,11 +3,12 @@
 const fs = require("fs")
 const mkdirp = require("mkdirp")
 const path = require("path")
+const rimraf = require("rimraf")
 const vinylFile = require("vinyl-file")
 
 const cwd = path.resolve(process.cwd(), "test/")
 
-const toPath = (fileName) => path.resolve(cwd, fileName)
+const toPath = (fileName) => path.resolve(cwd, "data", fileName)
 
 const toVinyl = (fileName) => vinylFile.readSync(toPath(fileName))
 
@@ -19,14 +20,14 @@ const create = (fileName, content) => {
   fs.writeFileSync(filePath, content)
 }
 
-const remove = (fileName) => fs.unlinkSync(toPath(fileName))
+const clean = () => rimraf.sync(toPath("."))
 
 const assertStreamContainsOnly = (stream, ...fileNames) => {
   const files = stream.map((vinyl) => vinyl.history[0])
   fileNames.forEach((fileName) => {
-    files.should.containEql(path.resolve(cwd, fileName))
+    files.should.containEql(toPath(fileName))
   })
   files.should.have.length(fileNames.length)
 }
 
-module.exports = { cwd, toPath, toVinyl, exists, create, remove, assertStreamContainsOnly }
+module.exports = { cwd, toPath, toVinyl, exists, create, clean, assertStreamContainsOnly }
