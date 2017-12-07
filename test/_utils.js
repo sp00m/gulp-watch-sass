@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
 const fs = require("fs")
+const mkdirp = require("mkdirp")
 const path = require("path")
 const vinylFile = require("vinyl-file")
 
@@ -12,7 +13,11 @@ const toVinyl = (fileName) => vinylFile.readSync(toPath(fileName))
 
 const exists = (fileName) => fs.existsSync(toPath(fileName))
 
-const create = (fileName, content) => fs.writeFileSync(toPath(fileName), content)
+const create = (fileName, content) => {
+  const filePath = toPath(fileName)
+  mkdirp.sync(path.dirname(filePath))
+  fs.writeFileSync(filePath, content)
+}
 
 const remove = (fileName) => fs.unlinkSync(toPath(fileName))
 

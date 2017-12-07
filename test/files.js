@@ -157,4 +157,48 @@ describe("gulp-watch-sass", () => {
 
   })
 
+  const testChanges = (changes, includePath) => {
+
+    const tree = new ImportTree("*.scss", { cwd, warn: console.warn, includePath }).build()
+    const handler = new EventHandler(tree)
+
+    changes.forEach((change) => {
+      const stream = handler.change(toVinyl(change.change), [])
+      assertStreamContainsOnly(stream, change.expect)
+    })
+
+    console.warn.called.should.be.false()
+
+  }
+
+  it("should follow includePath declaration order", () => {
+
+    create("dir1/a.scss", "@import 'b.scss';")
+    create("dir2/b.scss", "div { margin: 0; }")
+    create("dir3/b.scss", "div { margin: 0; }")
+
+    testChanges([
+      { change: "dir2/b.scss", expect: "dir1/a.scss" },
+      { change: "dir3/b.scss" }
+    ], ["dir2", "dir3"])
+    testChanges([
+      { change: "dir3/b.scss", expect: "dir1/a.scss" },
+      { change: "dir2/b.scss" }
+    ], ["dir3", "dir2"])
+
+  })
+
+  it("should ignore includePath if file is resolvable without it", () => {
+
+    create("dir1/a.scss", "@import 'b.scss';")
+    create("dir1/b.scss", "div { margin: 0; }")
+    create("dir2/b.scss", "div { margin: 0; }")
+
+    testChanges([
+      { change: "dir1/b.scss", expect: "dir1/a.scss" },
+      { change: "dir2/b.scss" }
+    ], ["dir2"])
+
+  })
+
 })
