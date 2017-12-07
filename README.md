@@ -43,9 +43,13 @@ Creates a watcher that will spy on files that are matched by `glob` which can be
 
 You can watch for CSS files modifications in addition to SASS ones. In this case, if the modified file is a CSS file, then only the [`@import`](http://sass-lang.com/guide#topic-5)ing files will be added to the stream.
 
-#### Options
+#### options
 
 This object is passed to the [`gulp-watch` options](https://www.npmjs.com/package/gulp-watch#options) directly.
+
+##### options.includePaths
+
+Mimics [node-sass' `includePaths` option](https://github.com/sass/node-sass#includepaths).
 
 ## Why?
 
