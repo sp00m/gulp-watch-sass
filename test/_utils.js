@@ -8,9 +8,9 @@ const vinylFile = require("vinyl-file")
 
 const cwd = path.resolve(process.cwd(), "test/")
 
-const toRelativePath = (fileName) => path.resolve("data", fileName)
+const toRelativePath = (fileName) => `data/${fileName}`
 
-const toPath = (fileName) => path.resolve(cwd, "data", fileName)
+const toPath = (fileName) => path.resolve(cwd, toRelativePath(fileName))
 
 const toVinyl = (fileName) => vinylFile.readSync(toPath(fileName))
 
