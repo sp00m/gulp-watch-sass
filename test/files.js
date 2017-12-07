@@ -158,7 +158,11 @@ describe("gulp-watch-sass", () => {
 
   const testChanges = (changes, includePaths) => {
 
-    const tree = new ImportTree("**/*.scss", { cwd, warn: console.warn, includePaths }).build()
+    const tree = new ImportTree("**/*.scss", {
+      cwd,
+      warn: console.warn,
+      includePaths: includePaths.map((includePath) => `data/${includePath}`)
+    }).build()
     const handler = new EventHandler(tree)
 
     changes.forEach((change) => {
@@ -178,11 +182,11 @@ describe("gulp-watch-sass", () => {
 
     testChanges([
       { change: "dir2/b.scss", expect: "dir1/a.scss" },
-      { change: "dir3/b.scss" }
+      { change: "dir3/b.scss", expect: null }
     ], ["dir2", "dir3"])
     testChanges([
       { change: "dir3/b.scss", expect: "dir1/a.scss" },
-      { change: "dir2/b.scss" }
+      { change: "dir2/b.scss", expect: null }
     ], ["dir3", "dir2"])
 
   })
@@ -195,7 +199,7 @@ describe("gulp-watch-sass", () => {
 
     testChanges([
       { change: "dir1/b.scss", expect: "dir1/a.scss" },
-      { change: "dir2/b.scss" }
+      { change: "dir2/b.scss", expect: null }
     ], ["dir2"])
 
   })

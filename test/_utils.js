@@ -8,6 +8,8 @@ const vinylFile = require("vinyl-file")
 
 const cwd = path.resolve(process.cwd(), "test/")
 
+const toRelativePath = (fileName) => path.resolve("data", fileName)
+
 const toPath = (fileName) => path.resolve(cwd, "data", fileName)
 
 const toVinyl = (fileName) => vinylFile.readSync(toPath(fileName))
@@ -24,10 +26,11 @@ const clean = () => rimraf.sync(toPath("."))
 
 const assertStreamContainsOnly = (stream, ...fileNames) => {
   const files = stream.map((vinyl) => vinyl.history[0])
-  fileNames.forEach((fileName) => {
+  const valuedFileNames = fileNames.filter((fileName) => fileName)
+  valuedFileNames.forEach((fileName) => {
     files.should.containEql(toPath(fileName))
   })
-  files.should.have.length(fileNames.length)
+  files.should.have.length(valuedFileNames.length)
 }
 
-module.exports = { cwd, toPath, toVinyl, exists, create, clean, assertStreamContainsOnly }
+module.exports = { cwd, toRelativePath, toPath, toVinyl, exists, create, clean, assertStreamContainsOnly }

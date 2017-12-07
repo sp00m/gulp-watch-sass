@@ -37,7 +37,7 @@ const ImportTree = (() => {
     switch (existingCandidates.length) {
 
     case 0:
-      throw new Error(`Could not resolve '${importedPath}' from file '${importingFile}': file not found`)
+      return null
 
     case 1:
       return existingCandidates[0]
@@ -49,9 +49,7 @@ const ImportTree = (() => {
   }
 
   function resolveImportWithExtension(importingFile, importedPath, importedFile) {
-    const candidates = [
-      importedFile
-    ]
+    const candidates = [importedFile]
     if (SCSS_FILENAME_WITHOUT_LEADING_UNDERSCORE.test(importedFile)) {
       candidates.push(importedFile.replace(FILENAME, "_$1"))
     }
@@ -59,23 +57,44 @@ const ImportTree = (() => {
   }
 
   function resolveImportWithoutExtension(importingFile, importedPath, importedFile) {
-    const candidates = [
-      `${importedFile}.scss`,
-      `${importedFile}.css`
-    ]
+    const candidates = [`${importedFile}.scss`, `${importedFile}.css`]
     if (FILENAME_WITHOUT_LEADING_UNDERSCORE.test(importedFile)) {
       candidates.push(importedFile.replace(FILENAME, "_$1.scss"))
     }
     return resolveImportCandidates.call(this, importingFile, importedPath, candidates)
   }
 
+  function tryResolveImport(importingFile, parent, importedPath) {
+    const importedFile = path.resolve(parent, importedPath)
+    const resolvedImportedFile = STYLESHEET_EXTENSION.test(importedFile)
+      ? resolveImportWithExtension.call(this, importingFile, importedPath, importedFile)
+      : resolveImportWithoutExtension.call(this, importingFile, importedPath, importedFile)
+    let resolved = false
+    if (resolvedImportedFile) {
+      gatherImport.call(this, importingFile, resolvedImportedFile)
+      resolved = true
+    }
+    return resolved
+  }
+
+  function buildCandidatingParents(importingFile) {
+    const candidatingParents = this.includePaths.map((includePath) => path.resolve(this.cwd, includePath))
+    candidatingParents.unshift(importingFile.replace(FILENAME, ""))
+    return candidatingParents
+  }
+
   function resolveImport(importingFile, importedPath) {
+    // if ends with .css, then SASS will translate it into CSS rule "@import url(...)"
     if (!importedPath.endsWith(".css")) {
-      // if ends with .css, then SASS will translate it into CSS rule "@import url(...)"
-      const importedFile = path.resolve(importingFile.replace(FILENAME, ""), importedPath)
-      gatherImport.call(this, importingFile, STYLESHEET_EXTENSION.test(importedFile)
-        ? resolveImportWithExtension.call(this, importingFile, importedPath, importedFile)
-        : resolveImportWithoutExtension.call(this, importingFile, importedPath, importedFile))
+      const candidatingParents = buildCandidatingParents.call(this, importingFile)
+      const resolved = candidatingParents.reduce(
+        (alreadyResolved, candidatingParent) =>
+          alreadyResolved || tryResolveImport.call(this, importingFile, candidatingParent, importedPath),
+        false
+      )
+      if (!resolved) {
+        throw new Error(`Could not resolve '${importedPath}' from file '${importingFile}': file not found`)
+      }
     }
   }
 
@@ -85,6 +104,7 @@ const ImportTree = (() => {
       this.globs = globs
       this.cwd = options.cwd || process.cwd()
       this.warn = options.warn || ((message) => gutil.log(gutil.colors.yellow(message)))
+      this.includePaths = options.includePaths || []
       this.desc = {}
       this.asc = {}
     }
