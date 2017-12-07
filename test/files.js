@@ -157,9 +157,9 @@ describe("gulp-watch-sass", () => {
 
   })
 
-  const testChanges = (changes, includePath) => {
+  const testChanges = (changes, includePaths) => {
 
-    const tree = new ImportTree("*.scss", { cwd, warn: console.warn, includePath }).build()
+    const tree = new ImportTree("*.scss", { cwd, warn: console.warn, includePaths }).build()
     const handler = new EventHandler(tree)
 
     changes.forEach((change) => {
@@ -171,7 +171,7 @@ describe("gulp-watch-sass", () => {
 
   }
 
-  it("should follow includePath declaration order", () => {
+  it("should follow includePaths declaration order", () => {
 
     create("dir1/a.scss", "@import 'b.scss';")
     create("dir2/b.scss", "div { margin: 0; }")
@@ -188,7 +188,7 @@ describe("gulp-watch-sass", () => {
 
   })
 
-  it("should ignore includePath if file is resolvable without it", () => {
+  it("should ignore includePaths if file is resolvable without it", () => {
 
     create("dir1/a.scss", "@import 'b.scss';")
     create("dir1/b.scss", "div { margin: 0; }")

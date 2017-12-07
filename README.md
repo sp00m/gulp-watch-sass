@@ -47,9 +47,9 @@ You can watch for CSS files modifications in addition to SASS ones. In this case
 
 This object is passed to the [`gulp-watch` options](https://www.npmjs.com/package/gulp-watch#options) directly.
 
-##### options.includePath
+##### options.includePaths
 
-Mimics [node-sass' `includePath` option](https://github.com/sass/node-sass#includepaths).
+Mimics [node-sass' `includePaths` option](https://github.com/sass/node-sass#includepaths).
 
 ## Why?
 
