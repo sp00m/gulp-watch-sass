@@ -143,4 +143,16 @@ describe("gulp-watch-sass", () => {
     ], ["dir2"])
   })
 
+  it("should handle comma-separated imports", () => {
+    create("a.scss", "@import 'b.scss', \"c.scss\";")
+    create("b.scss", "div { margin: 0; }")
+    create("c.scss", "div { margin: 0; }")
+    testChanges([
+      { change: "b.scss", expect: "a.scss" }
+    ])
+    testChanges([
+      { change: "c.scss", expect: "a.scss" }
+    ])
+  })
+
 })
