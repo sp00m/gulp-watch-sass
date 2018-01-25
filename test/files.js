@@ -46,6 +46,18 @@ describe("gulp-watch-sass", () => {
     ])
   })
 
+  it("should handle single-lined imports", () => {
+    create("a.scss", "@import 'b.scss'; @import \"c.scss\";")
+    create("b.scss", "div { margin: 0; }")
+    create("c.scss", "div { margin: 0; }")
+    testChanges([
+      { change: "b.scss", expect: "a.scss" }
+    ])
+    testChanges([
+      { change: "c.scss", expect: "a.scss" }
+    ])
+  })
+
   it("should handle SASS files with .scss extension", () => {
     create("a.scss", "@import 'b.scss';")
     create("b.scss", "div { margin: 0; }")
