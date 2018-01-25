@@ -34,6 +34,18 @@ describe("gulp-watch-sass", () => {
     console.warn.called.should.be.false()
   }
 
+  it("should handle both single and double quotes", () => {
+    create("a.scss", "@import 'b.scss';\n@import \"c.scss\";")
+    create("b.scss", "div { margin: 0; }")
+    create("c.scss", "div { margin: 0; }")
+    testChanges([
+      { change: "b.scss", expect: "a.scss" }
+    ])
+    testChanges([
+      { change: "c.scss", expect: "a.scss" }
+    ])
+  })
+
   it("should handle SASS files with .scss extension", () => {
     create("a.scss", "@import 'b.scss';")
     create("b.scss", "div { margin: 0; }")
