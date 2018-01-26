@@ -34,6 +34,30 @@ describe("gulp-watch-sass", () => {
     console.warn.called.should.be.false()
   }
 
+  it("should handle both single and double quotes", () => {
+    create("a.scss", "@import 'b.scss';\n@import \"c.scss\";")
+    create("b.scss", "div { margin: 0; }")
+    create("c.scss", "div { margin: 0; }")
+    testChanges([
+      { change: "b.scss", expect: "a.scss" }
+    ])
+    testChanges([
+      { change: "c.scss", expect: "a.scss" }
+    ])
+  })
+
+  it("should handle multiple imports on a single line", () => {
+    create("a.scss", "@import 'b.scss'; @import 'c.scss';")
+    create("b.scss", "div { margin: 0; }")
+    create("c.scss", "div { margin: 0; }")
+    testChanges([
+      { change: "b.scss", expect: "a.scss" }
+    ])
+    testChanges([
+      { change: "c.scss", expect: "a.scss" }
+    ])
+  })
+
   it("should handle SASS files with .scss extension", () => {
     create("a.scss", "@import 'b.scss';")
     create("b.scss", "div { margin: 0; }")
@@ -129,6 +153,30 @@ describe("gulp-watch-sass", () => {
       { change: "dir1/b.scss", expect: "dir1/a.scss" },
       { change: "dir2/b.scss", expect: null }
     ], ["dir2"])
+  })
+
+  it("should handle comma-separated imports", () => {
+    create("a.scss", "@import 'b.scss',\n'c.scss';")
+    create("b.scss", "div { margin: 0; }")
+    create("c.scss", "div { margin: 0; }")
+    testChanges([
+      { change: "b.scss", expect: "a.scss" }
+    ])
+    testChanges([
+      { change: "c.scss", expect: "a.scss" }
+    ])
+  })
+
+  it("should handle comma-separated imports on a single line", () => {
+    create("a.scss", "@import 'b.scss', 'c.scss';")
+    create("b.scss", "div { margin: 0; }")
+    create("c.scss", "div { margin: 0; }")
+    testChanges([
+      { change: "b.scss", expect: "a.scss" }
+    ])
+    testChanges([
+      { change: "c.scss", expect: "a.scss" }
+    ])
   })
 
 })
