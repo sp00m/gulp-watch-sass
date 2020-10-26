@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "globby": "~8.0.1",
-    "gulp-fn": "~0.0.2",
+    "gulp-fn": "~0.0.3",
     "gulp-watch": "~5.0.0",
     "vinyl-file": "~3.0.0"
   },
